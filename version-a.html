@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSE University — Apply Now (Version A)</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#F5F5F3;color:#222;font-size:16px;line-height:1.6}
+
+/* VERSION BADGE */
+.ver-badge{
+  position:fixed;top:16px;right:16px;z-index:999;
+  background:#888;color:#fff;font-size:12px;font-weight:700;
+  padding:8px 16px;border-radius:20px;
+  font-family:'DM Sans',sans-serif;letter-spacing:.04em;
+  box-shadow:0 2px 12px rgba(0,0,0,.2);
+}
+.back-btn{
+  position:fixed;top:16px;left:16px;z-index:999;
+  background:#fff;color:#555;font-size:13px;font-weight:500;
+  padding:8px 16px;border-radius:20px;text-decoration:none;
+  border:1px solid #ddd;box-shadow:0 2px 8px rgba(0,0,0,.1);transition:all .2s;
+}
+.back-btn:hover{background:#f0f0f0}
+
+/* HEADER */
+.site-nav{background:#6B7F99;padding:14px 40px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{color:#fff;font-size:17px;font-weight:600;text-decoration:none}
+.nav-links{display:flex;gap:24px}
+.nav-links a{color:rgba(255,255,255,.75);text-decoration:none;font-size:14px}
+
+/* HERO */
+.hero{background:linear-gradient(160deg,#8B9BB4 0%,#6B7F99 100%);padding:80px 40px;text-align:center}
+.hero-eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:12px}
+.hero h1{font-size:clamp(28px,4vw,48px);font-weight:700;color:#fff;margin-bottom:16px;line-height:1.2}
+.hero p{font-size:16px;color:rgba(255,255,255,.8);max-width:520px;margin:0 auto 32px}
+.cta-primary{
+  display:inline-block;background:#888;color:#fff;
+  padding:14px 36px;border-radius:6px;font-size:16px;font-weight:600;
+  text-decoration:none;cursor:pointer;border:none;
+  transition:background .2s;
+}
+.cta-primary:hover{background:#777}
+
+/* BREADCRUMB */
+.breadcrumb{background:#fff;padding:12px 40px;border-bottom:1px solid #e8e8e8;font-size:13px;color:#888}
+.breadcrumb a{color:#6B7F99;text-decoration:none}
+
+/* CONTENT */
+.page-wrap{max-width:1060px;margin:0 auto;padding:48px 40px}
+@media(max-width:700px){.page-wrap{padding:32px 20px}}
+
+.info-grid{display:grid;grid-template-columns:2fr 1fr;gap:40px;margin-bottom:48px}
+@media(max-width:700px){.info-grid{grid-template-columns:1fr}}
+
+.main-content{}
+.section-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:8px;font-weight:600}
+h2{font-size:22px;font-weight:700;color:#1A1A18;margin-bottom:16px}
+h3{font-size:18px;font-weight:600;color:#1A1A18;margin-bottom:12px;margin-top:28px}
+p{color:#555;margin-bottom:16px;line-height:1.7}
+
+.program-details{
+  background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:20px;margin-bottom:20px;
+}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px}
+.detail-row:last-child{border-bottom:none}
+.detail-label{color:#888;font-size:13px}
+.detail-value{font-weight:600;color:#222}
+
+.sidebar{}
+.sidebar-card{background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:24px;margin-bottom:16px}
+.sidebar-card h4{font-size:15px;font-weight:700;margin-bottom:12px;color:#1A1A18}
+
+/* FORM */
+.form-section{background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:28px;margin-bottom:32px}
+.form-section h3{margin-top:0}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:#555;margin-bottom:6px}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:6px;
+  font-size:14px;font-family:'DM Sans',sans-serif;color:#333;
+  background:#fff;transition:border-color .2s;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{
+  outline:none;border-color:#8B9BB4;
+}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:500px){.form-grid{grid-template-columns:1fr}}
+.form-group textarea{height:80px;resize:vertical}
+.form-submit{
+  width:100%;background:#888;color:#fff;border:none;
+  padding:14px;border-radius:6px;font-size:16px;font-weight:600;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:background .2s;
+  position:relative;
+}
+.form-submit:hover{background:#777}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:2px solid #e8e8e8;margin-bottom:24px}
+.tab{padding:10px 20px;font-size:14px;font-weight:500;color:#888;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}
+.tab.active{color:#6B7F99;border-bottom-color:#6B7F99}
+
+/* FACULTY */
+.faculty-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;margin-bottom:32px}
+.faculty-card{text-align:center;padding:16px;background:#fff;border:1px solid #e8e8e8;border-radius:8px}
+.faculty-avatar{width:56px;height:56px;border-radius:50%;background:#C8C8C8;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#888}
+.faculty-name{font-size:13px;font-weight:600;color:#222;margin-bottom:4px}
+.faculty-title{font-size:11px;color:#888}
+
+/* SCHOLARSHIP - hidden below fold */
+.scholarship-section{
+  background:#F5F5F3;border:1px dashed #C8C8C8;
+  border-radius:8px;padding:24px;margin-top:40px;
+}
+.scholarship-section h3{color:#888}
+.scholarship-section p{color:#999}
+
+/* FOOTER */
+footer{background:#6B7F99;padding:32px 40px;color:rgba(255,255,255,.7);font-size:13px;text-align:center;margin-top:48px}
+footer strong{color:#fff}
+
+/* CLICK OVERLAY */
+.click-confirm{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:9999;align-items:center;justify-content:center;
+}
+.click-confirm.show{display:flex}
+.confirm-box{
+  background:#fff;border-radius:16px;padding:40px;text-align:center;
+  max-width:400px;margin:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);
+}
+.confirm-icon{font-size:48px;margin-bottom:16px}
+.confirm-box h3{font-size:20px;font-weight:700;margin-bottom:8px;color:#222}
+.confirm-box p{color:#666;margin-bottom:24px;font-size:15px}
+.confirm-btn{
+  display:inline-block;background:#6B7F99;color:#fff;
+  padding:12px 28px;border-radius:8px;text-decoration:none;
+  font-weight:600;font-size:15px;cursor:pointer;border:none;
+  font-family:'DM Sans',sans-serif;
+}
+</style>
+</head>
+<body>
+
+<div class="ver-badge">Version A — Control</div>
+<a class="back-btn" href="index.html">← Back to Dashboard</a>
+
+<nav class="site-nav">
+  <a href="#" class="nav-logo">HSE University</a>
+  <div class="nav-links">
+    <a href="#">Programmes</a>
+    <a href="#">Admissions</a>
+    <a href="#">Scholarships</a>
+    <a href="#">Contact</a>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <a href="#">Home</a> › <a href="#">International Students</a> › Master's in Business Analytics and Big Data Systems
+</div>
+
+<div class="hero">
+  <div class="hero-eyebrow">Master's Programme · 38.04.05 Business Informatics</div>
+  <h1>Master's in Business Analytics<br>and Big Data Systems</h1>
+  <p>Two-year master's programme in English at HSE University, Moscow campus</p>
+  <button class="cta-primary" onclick="recordClick()">Apply Now</button>
+</div>
+
+<div class="page-wrap">
+  <div class="info-grid">
+    <div class="main-content">
+      <div class="section-label">Programme Overview</div>
+      <h2>About the Programme</h2>
+      <p>The Master's programme in Business Analytics and Big Data Systems prepares students for careers in data-driven decision making, machine learning engineering, and business intelligence at leading international organisations.</p>
+      <p>The programme is delivered entirely in English across four semesters at HSE University's Moscow campus. Students graduate with a Russian Master's degree recognised across the CIS, Europe, and increasingly in Asia and the Middle East.</p>
+
+      <div class="tabs">
+        <div class="tab active">Overview</div>
+        <div class="tab">Curriculum</div>
+        <div class="tab">Faculty</div>
+        <div class="tab">Admissions</div>
+      </div>
+
+      <div class="program-details">
+        <div class="detail-row"><span class="detail-label">Duration</span><span class="detail-value">2 years (4 semesters)</span></div>
+        <div class="detail-row"><span class="detail-label">Language</span><span class="detail-value">English (100%)</span></div>
+        <div class="detail-row"><span class="detail-label">Campus</span><span class="detail-value">Moscow, Russia</span></div>
+        <div class="detail-row"><span class="detail-label">Degree</span><span class="detail-value">Master of Science</span></div>
+        <div class="detail-row"><span class="detail-label">Credits</span><span class="detail-value">120 ECTS</span></div>
+        <div class="detail-row"><span class="detail-label">Start</span><span class="detail-value">September 2026</span></div>
+      </div>
+
+      <h3>Faculty</h3>
+      <div class="faculty-grid">
+        <div class="faculty-card"><div class="faculty-avatar">👨‍🏫</div><div class="faculty-name">Prof. A. Petrov</div><div class="faculty-title">Machine Learning</div></div>
+        <div class="faculty-card"><div class="faculty-avatar">👩‍🏫</div><div class="faculty-name">Dr. M. Sorokina</div><div class="faculty-title">Data Engineering</div></div>
+        <div class="faculty-card"><div class="faculty-avatar">👨‍🏫</div><div class="faculty-name">Prof. I. Volkov</div><div class="faculty-title">Business Analytics</div></div>
+        <div class="faculty-card"><div class="faculty-avatar">👩‍🏫</div><div class="faculty-name">Dr. K. Ivanova</div><div class="faculty-title">Statistics</div></div>
+      </div>
+
+      <h3>Admission Requirements</h3>
+      <p>Applicants must hold a Bachelor's degree in a relevant field. English proficiency is demonstrated through IELTS (6.0+), TOEFL (80+), or equivalent. Entry is through competitive selection including portfolio review and interview.</p>
+    </div>
+
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <h4>Key Information</h4>
+        <div class="detail-row" style="padding:8px 0"><span class="detail-label">Tuition</span><span class="detail-value">$4,200/yr</span></div>
+        <div class="detail-row" style="padding:8px 0"><span class="detail-label">Deadline</span><span class="detail-value">March 31, 2026</span></div>
+        <div class="detail-row" style="padding:8px 0"><span class="detail-label">Seats</span><span class="detail-value">35 places</span></div>
+      </div>
+      <div class="sidebar-card">
+        <h4>Contact Admissions</h4>
+        <p style="font-size:13px;color:#666;margin-bottom:8px">For questions about the programme or application process.</p>
+        <p style="font-size:13px;color:#6B7F99">international@hse.ru</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- INQUIRY FORM - 6 fields -->
+  <div class="form-section">
+    <h3>Request Information</h3>
+    <p style="font-size:14px;color:#888;margin-bottom:20px">Fill in the form below and our admissions team will contact you.</p>
+    <div class="form-grid">
+      <div class="form-group"><label>Full Name *</label><input type="text" placeholder="Enter your full name"></div>
+      <div class="form-group"><label>Email Address *</label><input type="email" placeholder="your@email.com"></div>
+      <div class="form-group"><label>Phone Number</label><input type="tel" placeholder="+1 (country code) number"></div>
+      <div class="form-group"><label>Country of Residence</label><select><option>Select your country</option><option>India</option><option>Iran</option><option>Pakistan</option><option>Egypt</option><option>Kazakhstan</option><option>Other</option></select></div>
+    </div>
+    <div class="form-group"><label>Programme of Interest *</label><select><option>Business Analytics and Big Data Systems</option><option>Computer Science</option><option>Applied Mathematics</option></select></div>
+    <div class="form-group"><label>Your Message</label><textarea placeholder="Write any questions you have about the programme, admissions process, or student life..."></textarea></div>
+    <button class="form-submit" onclick="recordClick()">Submit Enquiry</button>
+  </div>
+
+  <!-- SCHOLARSHIP - buried below fold -->
+  <div class="scholarship-section">
+    <h3>Scholarship Information</h3>
+    <p>The Russian Government Quota programme provides funded places for international students. Limited places available. Contact the admissions office for details.</p>
+    <p style="font-size:13px;color:#aaa">Note: Scholarship information is available on request.</p>
+  </div>
+</div>
+
+<footer>
+  <strong>HSE University</strong> · National Research University Higher School of Economics · Moscow, Russia<br>
+  <span style="font-size:11px;opacity:.6;margin-top:4px;display:block">Version A — Control page · HSE A/B Testing Study 2026</span>
+</footer>
+
+<!-- CLICK CONFIRMATION -->
+<div class="click-confirm" id="confirm">
+  <div class="confirm-box">
+    <div class="confirm-icon">📋</div>
+    <h3>Action recorded!</h3>
+    <p>Your click on <strong>Version A</strong> has been saved to the dashboard. You'll be redirected back to see the live results.</p>
+    <button class="confirm-btn" onclick="redirectBack()">View Dashboard Results</button>
+  </div>
+</div>
+
+<script>
+function getH() {
+  const p = new URLSearchParams(window.location.search);
+  return p.get('h') || '1';
+}
+
+function recordClick() {
+  // Save to localStorage
+  const STORE = 'hse_ab_clicks_v2';
+  let data = {};
+  try { data = JSON.parse(localStorage.getItem(STORE)) || {}; } catch(e){}
+  const key = `h${getH()}_va`;
+  data[key] = (data[key] || 0) + 1;
+  try { localStorage.setItem(STORE, JSON.stringify(data)); } catch(e){}
+  // Show confirm
+  document.getElementById('confirm').classList.add('show');
+}
+
+function redirectBack() {
+  window.location.href = `index.html?h=${getH()}&v=a`;
+}
+</script>
+</body>
+</html>

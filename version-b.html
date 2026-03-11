@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSE University — Build Your International Career (Version B)</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#FAFAF7;color:#1A1A18;font-size:16px;line-height:1.65;overflow-x:hidden}
+
+/* VERSION BADGE */
+.ver-badge{
+  position:fixed;top:16px;right:16px;z-index:999;
+  background:var(--hse);color:#fff;font-size:12px;font-weight:700;
+  padding:8px 16px;border-radius:20px;
+  box-shadow:0 2px 12px rgba(31,78,121,.3);
+}
+.back-btn{
+  position:fixed;top:16px;left:16px;z-index:999;
+  background:#fff;color:#1F4E79;font-size:13px;font-weight:600;
+  padding:8px 16px;border-radius:20px;text-decoration:none;
+  border:1.5px solid #BDD7EE;box-shadow:0 2px 8px rgba(31,78,121,.1);transition:all .2s;
+}
+.back-btn:hover{background:#EBF3FB}
+
+:root{
+  --hse:#1F4E79;--hse2:#2E75B6;--hse-light:#EBF3FB;
+  --green:#1A7A4A;--green-light:#E8F5EE;
+  --gold:#C8992A;--cream:#FAFAF7;--rule:#DDD8CC;
+}
+
+/* NAV */
+.site-nav{
+  background:var(--hse);padding:0 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:10px;
+  color:#fff;text-decoration:none;padding:14px 0;
+}
+.logo-m{width:32px;height:32px;background:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;font-size:16px;color:var(--hse)}
+.logo-t{font-size:14px;font-weight:600;opacity:.9}
+.nav-links{display:flex;gap:8px}
+.nav-links a{color:rgba(255,255,255,.8);text-decoration:none;font-size:14px;padding:8px 12px;border-radius:6px;transition:all .2s}
+.nav-links a:hover{background:rgba(255,255,255,.12);color:#fff}
+
+/* SCHOLARSHIP BANNER - above fold! */
+.sch-banner{
+  background:linear-gradient(135deg,#E8F5EE,#F0FAF5);
+  border-bottom:2px solid #B8D8C0;
+  padding:14px 40px;
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+}
+.sch-banner .icon{font-size:24px}
+.sch-banner .text{flex:1}
+.sch-banner strong{color:var(--green);font-size:16px;display:block;line-height:1.3}
+.sch-banner p{color:#2A5A3A;font-size:14px;margin-top:2px}
+.sch-cta{
+  background:var(--green);color:#fff;padding:10px 20px;border-radius:8px;
+  font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap;
+  transition:all .2s;border:none;cursor:pointer;
+}
+.sch-cta:hover{background:#156038;transform:translateY(-1px)}
+
+/* HERO */
+.hero{
+  background:linear-gradient(135deg,var(--hse) 0%,var(--hse2) 60%,#1A6FA8 100%);
+  padding:72px 40px;
+  position:relative;overflow:hidden;
+}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.hero-inner{max-width:800px;position:relative;z-index:1}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  border-radius:20px;padding:6px 16px;font-size:12px;color:rgba(255,255,255,.85);
+  letter-spacing:.06em;margin-bottom:20px;
+}
+.hero h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(32px,4.5vw,56px);
+  font-weight:900;color:#fff;line-height:1.15;
+  letter-spacing:-.02em;margin-bottom:16px;
+}
+.hero h1 em{font-style:normal;color:#7DD3FC}
+.hero-sub{
+  color:rgba(255,255,255,.85);font-size:18px;
+  max-width:580px;line-height:1.65;margin-bottom:32px;
+}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.cta-main{
+  background:#4ADE80;color:#14532D;
+  padding:16px 36px;border-radius:10px;
+  font-size:17px;font-weight:700;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  box-shadow:0 4px 20px rgba(74,222,128,.4);
+  transition:all .2s;
+}
+.cta-main:hover{background:#22C55E;transform:translateY(-2px);box-shadow:0 8px 28px rgba(74,222,128,.5)}
+.cta-secondary{
+  color:rgba(255,255,255,.85);font-size:15px;font-weight:500;
+  padding:14px 24px;border:1.5px solid rgba(255,255,255,.3);
+  border-radius:10px;text-decoration:none;
+  transition:all .2s;cursor:pointer;background:transparent;
+  font-family:'DM Sans',sans-serif;
+}
+.cta-secondary:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.5)}
+
+/* TRUST BAR */
+.trust-bar{
+  background:#fff;border-bottom:1px solid var(--rule);
+  padding:16px 40px;
+  display:flex;gap:32px;flex-wrap:wrap;align-items:center;
+}
+.trust-item{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:500;color:#555;
+}
+.trust-item .icon{font-size:16px}
+
+/* MAIN LAYOUT */
+.page-wrap{max-width:1080px;margin:0 auto;padding:48px 40px}
+@media(max-width:700px){.page-wrap{padding:32px 20px}}
+
+.content-grid{display:grid;grid-template-columns:2fr 1fr;gap:40px}
+@media(max-width:800px){.content-grid{grid-template-columns:1fr}}
+
+/* TESTIMONIALS */
+.testimonials{margin-bottom:32px}
+.testi-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#888;margin-bottom:12px}
+.testi-card{
+  background:#fff;border:1px solid var(--rule);border-radius:12px;
+  padding:16px 20px;margin-bottom:10px;
+  display:flex;gap:12px;align-items:flex-start;
+  transition:box-shadow .2s;
+}
+.testi-card:hover{box-shadow:0 4px 16px rgba(31,78,121,.08)}
+.testi-av{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:700;color:#fff;
+}
+.testi-body p{font-size:14px;color:#444;line-height:1.6;font-style:italic;margin-bottom:4px}
+.testi-body strong{font-size:12px;color:#888;font-style:normal}
+.stars{color:#C8992A;font-size:12px;margin-bottom:4px}
+
+/* PROGRAM DETAILS */
+h2{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:var(--hse);margin-bottom:20px}
+h3{font-size:18px;font-weight:700;color:#1A1A18;margin-bottom:12px;margin-top:28px}
+p{color:#555;margin-bottom:16px;line-height:1.7}
+
+.detail-card{background:#fff;border:1px solid var(--rule);border-radius:12px;overflow:hidden;margin-bottom:20px}
+.detail-card-header{background:var(--hse-light);padding:12px 20px;font-size:13px;font-weight:600;color:var(--hse)}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #F0EDE6;font-size:14px}
+.detail-row:last-child{border-bottom:none}
+.detail-label{color:#888}
+.detail-value{font-weight:600;color:#1A1A18}
+
+/* SIDEBAR */
+.sidebar{}
+.side-card{background:#fff;border:1px solid var(--rule);border-radius:12px;padding:24px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.side-card h4{font-size:15px;font-weight:700;margin-bottom:12px;color:var(--hse)}
+
+/* FORM - 3 fields only */
+.form-card{
+  background:linear-gradient(135deg,var(--hse),var(--hse2));
+  border-radius:16px;padding:28px;margin-bottom:16px;
+}
+.form-card h4{font-family:'Playfair Display',serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:6px}
+.form-card > p{font-size:14px;color:rgba(255,255,255,.75);margin-bottom:20px}
+.f-group{margin-bottom:14px}
+.f-group label{display:block;font-size:12px;font-weight:600;color:rgba(255,255,255,.75);margin-bottom:5px;letter-spacing:.03em}
+.f-group input,.f-group select{
+  width:100%;padding:11px 14px;border:1.5px solid rgba(255,255,255,.2);
+  border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;
+  background:rgba(255,255,255,.12);color:#fff;transition:all .2s;
+}
+.f-group input::placeholder{color:rgba(255,255,255,.5)}
+.f-group input:focus,.f-group select:focus{outline:none;border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.18)}
+.f-group select option{background:#1F4E79;color:#fff}
+.form-submit-b{
+  width:100%;background:#4ADE80;color:#14532D;border:none;
+  padding:14px;border-radius:8px;font-size:16px;font-weight:700;
+  cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px;
+  box-shadow:0 3px 12px rgba(74,222,128,.4);transition:all .2s;
+}
+.form-submit-b:hover{background:#22C55E;transform:translateY(-1px)}
+.form-note{font-size:11px;color:rgba(255,255,255,.55);text-align:center;margin-top:8px}
+
+/* OUTCOME BADGES */
+.outcomes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.outcome-badge{
+  background:var(--hse-light);color:var(--hse);border:1px solid #BDD7EE;
+  border-radius:20px;padding:6px 14px;font-size:13px;font-weight:500;
+}
+
+/* STICKY CTA - mobile */
+.sticky-cta-bar{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;z-index:500;
+  background:var(--hse);padding:14px 20px;
+  box-shadow:0 -4px 20px rgba(31,78,121,.25);
+  align-items:center;justify-content:space-between;gap:12px;
+}
+@media(max-width:768px){.sticky-cta-bar{display:flex}}
+.sticky-cta-bar p{color:rgba(255,255,255,.8);font-size:13px}
+.sticky-cta-bar p strong{color:#fff;display:block}
+.sticky-btn{background:#4ADE80;color:#14532D;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;border:none;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif}
+
+/* FOOTER */
+footer{background:var(--hse);padding:32px 40px;margin-top:64px;text-align:center}
+footer p{color:rgba(255,255,255,.7);font-size:13px;line-height:1.7}
+footer strong{color:#fff}
+
+/* CONFIRM OVERLAY */
+.click-confirm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center}
+.click-confirm.show{display:flex}
+.confirm-box{background:#fff;border-radius:20px;padding:44px;text-align:center;max-width:420px;margin:20px;box-shadow:0 24px 80px rgba(0,0,0,.3)}
+.confirm-icon{font-size:52px;margin-bottom:16px}
+.confirm-box h3{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;margin-bottom:8px;color:var(--hse)}
+.confirm-box p{color:#666;margin-bottom:24px;font-size:15px;line-height:1.6}
+.confirm-btn{display:inline-block;background:var(--hse);color:#fff;padding:13px 28px;border-radius:10px;font-weight:600;font-size:15px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .2s}
+.confirm-btn:hover{background:var(--hse2)}
+</style>
+</head>
+<body>
+
+<div class="ver-badge">Version B — Optimised</div>
+<a class="back-btn" href="index.html">← Back to Dashboard</a>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a href="#" class="nav-logo">
+    <div class="logo-m">Н</div>
+    <span class="logo-t">HSE University</span>
+  </a>
+  <div class="nav-links">
+    <a href="#">Programmes</a>
+    <a href="#">International</a>
+    <a href="#">Scholarships</a>
+    <a href="#">Apply</a>
+  </div>
+</nav>
+
+<!-- SCHOLARSHIP BANNER - ABOVE FOLD -->
+<div class="sch-banner">
+  <div class="icon">🎓</div>
+  <div class="text">
+    <strong>Government Quota: 880 fully-funded places for international students · 2025/26</strong>
+    <p>Full tuition covered by the Russian Government · Apply before March 31, 2026</p>
+  </div>
+  <button class="sch-cta" onclick="recordClick()">Apply for Scholarship →</button>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Master's Programme · Business Analytics · Moscow</div>
+    <h1>Build Your<br><em>International Career</em><br>in Data Science</h1>
+    <p class="hero-sub">Join 389,000 international students in Russia. HSE University's top-ranked Master's in Business Analytics and Big Data Systems — fully in English, with Government Scholarship available.</p>
+    <div class="hero-btns">
+      <button class="cta-main" onclick="recordClick()">Apply for Master's — Scholarship Available →</button>
+      <button class="cta-secondary" onclick="recordClick()">Download Programme Guide</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item"><span class="icon">🏛️</span>Top-3 Russian university</div>
+  <div class="trust-item"><span class="icon">🌍</span>100% English instruction</div>
+  <div class="trust-item"><span class="icon">🎓</span>Government Quota available</div>
+  <div class="trust-item"><span class="icon">📍</span>Moscow, Russia</div>
+  <div class="trust-item"><span class="icon">⭐</span>4.7/5 student satisfaction</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="page-wrap">
+  <div class="content-grid">
+    <div class="main-col">
+
+      <!-- TESTIMONIALS - near top, before programme info -->
+      <div class="testimonials">
+        <div class="testi-label">What our students say</div>
+        <div class="testi-card">
+          <div class="testi-av" style="background:#1F4E79">A</div>
+          <div class="testi-body">
+            <div class="stars">★★★★★</div>
+            <p>"The Government Quota covered 100% of my tuition. The admissions process was straightforward, and the English instruction quality is excellent. HSE opened doors I couldn't have imagined."</p>
+            <strong>Arjun M. · India · MSc Business Analytics · Class of 2025</strong>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-av" style="background:#7030A0">F</div>
+          <div class="testi-body">
+            <div class="stars">★★★★★</div>
+            <p>"I received my scholarship confirmation within 3 weeks. The Support Centre guided me through every step of the visa process. Moscow is a fantastic city for international students."</p>
+            <strong>Fatima K. · Iran · MSc Business Analytics · Class of 2024</strong>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-av" style="background:#C8992A">O</div>
+          <div class="testi-body">
+            <div class="stars">★★★★★</div>
+            <p>"The machine learning curriculum is world-class. I had three job offers before graduation — two from international companies and one from a top Russian tech firm."</p>
+            <strong>Omar S. · Egypt · MSc Business Analytics · Class of 2025</strong>
+          </div>
+        </div>
+      </div>
+
+      <h2>Master's in Business Analytics<br>and Big Data Systems</h2>
+
+      <div class="outcomes">
+        <span class="outcome-badge">🤖 Machine Learning</span>
+        <span class="outcome-badge">📊 Data Engineering</span>
+        <span class="outcome-badge">💼 Business Intelligence</span>
+        <span class="outcome-badge">🐍 Python &amp; R</span>
+        <span class="outcome-badge">☁️ Cloud Platforms</span>
+        <span class="outcome-badge">📈 Predictive Analytics</span>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-card-header">Programme Details</div>
+        <div class="detail-row"><span class="detail-label">Duration</span><span class="detail-value">2 years (4 semesters)</span></div>
+        <div class="detail-row"><span class="detail-label">Language</span><span class="detail-value">100% English</span></div>
+        <div class="detail-row"><span class="detail-label">Campus</span><span class="detail-value">HSE Moscow</span></div>
+        <div class="detail-row"><span class="detail-label">Tuition (non-funded)</span><span class="detail-value">$4,200/year</span></div>
+        <div class="detail-row"><span class="detail-label">Scholarship option</span><span class="detail-value" style="color:var(--green);font-weight:700">Government Quota — FREE ✓</span></div>
+        <div class="detail-row"><span class="detail-label">Application deadline</span><span class="detail-value" style="color:#C0392B;font-weight:700">March 31, 2026</span></div>
+        <div class="detail-row"><span class="detail-label">Programme start</span><span class="detail-value">September 2026</span></div>
+        <div class="detail-row"><span class="detail-label">Available seats</span><span class="detail-value">35 (+ Quota places)</span></div>
+      </div>
+
+      <h3>Why HSE University?</h3>
+      <p>HSE University is Russia's leading research university in economics and social sciences, ranked among the top universities in Eastern Europe. Our Business Analytics programme is taught entirely in English by faculty with international industry experience.</p>
+      <p>Alumni have gone on to careers at Yandex, Sber, McKinsey, and major international technology companies. The programme's combination of rigorous quantitative training and real-world project work is uniquely positioned for the data science job market.</p>
+    </div>
+
+    <div class="sidebar">
+      <!-- 3-FIELD FORM -->
+      <div class="form-card">
+        <h4>Get Your Free Info Pack</h4>
+        <p>Takes 30 seconds. We reply within 48 hours.</p>
+        <div class="f-group">
+          <label>Your Name</label>
+          <input type="text" placeholder="Enter your name">
+        </div>
+        <div class="f-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="your@email.com">
+        </div>
+        <div class="f-group">
+          <label>Programme of Interest</label>
+          <select>
+            <option>Business Analytics &amp; Big Data</option>
+            <option>Computer Science</option>
+            <option>Applied Mathematics</option>
+          </select>
+        </div>
+        <button class="form-submit-b" onclick="recordClick()">Get Free Info Pack →</button>
+        <div class="form-note">No spam · Unsubscribe anytime</div>
+      </div>
+
+      <div class="side-card">
+        <h4>📞 Speak to Admissions</h4>
+        <p style="font-size:13px;color:#666;margin-bottom:8px">Our international admissions team speaks English, Arabic, and Hindi.</p>
+        <p style="font-size:14px;color:var(--hse);font-weight:600">international@hse.ru</p>
+        <p style="font-size:12px;color:#888;margin-top:4px">Mon–Fri, 10:00–19:00 Moscow time</p>
+      </div>
+
+      <div class="side-card" style="background:var(--green-light);border-color:#B8D8C0">
+        <h4 style="color:var(--green)">🎓 Government Quota</h4>
+        <p style="font-size:13px;color:#1A3D2A;margin-bottom:12px">880 fully-funded places. Tuition paid by the Russian Government. Open to students from 150+ countries.</p>
+        <button style="width:100%;background:var(--green);color:#fff;border:none;padding:10px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="recordClick()">Apply for Quota Place →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STICKY CTA for mobile -->
+<div class="sticky-cta-bar">
+  <div><p><strong>Apply for Master's Programme</strong>Government Scholarship available</p></div>
+  <button class="sticky-btn" onclick="recordClick()">Apply Now →</button>
+</div>
+
+<footer>
+  <p><strong>HSE University</strong> · National Research University Higher School of Economics<br>
+  Support and Career Centre for International Students and Alumni · Moscow, Russia</p>
+  <p style="font-size:11px;opacity:.5;margin-top:8px">Version B — Optimised page · HSE A/B Testing Study 2026</p>
+</footer>
+
+<!-- CONFIRM OVERLAY -->
+<div class="click-confirm" id="confirm">
+  <div class="confirm-box">
+    <div class="confirm-icon">✅</div>
+    <h3>Action recorded!</h3>
+    <p>Your interaction with <strong>Version B</strong> has been saved to the dashboard. Return to see how B compares to A in real-time.</p>
+    <button class="confirm-btn" onclick="redirectBack()">View Live Results on Dashboard</button>
+  </div>
+</div>
+
+<script>
+function getH() {
+  const p = new URLSearchParams(window.location.search);
+  return p.get('h') || '1';
+}
+function recordClick() {
+  const STORE = 'hse_ab_clicks_v2';
+  let data = {};
+  try { data = JSON.parse(localStorage.getItem(STORE)) || {}; } catch(e){}
+  const key = `h${getH()}_vb`;
+  data[key] = (data[key] || 0) + 1;
+  try { localStorage.setItem(STORE, JSON.stringify(data)); } catch(e){}
+  document.getElementById('confirm').classList.add('show');
+}
+function redirectBack() {
+  window.location.href = `index.html?h=${getH()}&v=b`;
+}
+</script>
+</body>
+</html>
