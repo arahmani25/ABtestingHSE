@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSE University — A/B Testing Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D1117;--surface:#161B22;--surface2:#21262D;--border:#30363D;
+  --text:#E6EDF3;--muted:#8B949E;--accent:#2F81F7;--green:#3FB950;
+  --red:#F85149;--yellow:#D29922;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+.hero{background:linear-gradient(135deg,#0D1117 0%,#161B22 50%,#0D1421 100%);border-bottom:1px solid var(--border);padding:72px 24px 64px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(47,129,247,.15),transparent)}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(47,129,247,.1);border:1px solid rgba(47,129,247,.3);border-radius:20px;padding:6px 16px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:24px;letter-spacing:.05em}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,60px);font-weight:800;letter-spacing:-.02em;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#E6EDF3 0%,#8B949E 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero h1 span{background:linear-gradient(135deg,#2F81F7,#A371F7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--muted);font-size:17px;max-width:560px;margin:0 auto 32px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;font-size:13px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.hero-meta strong{color:var(--text)}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));border-bottom:1px solid var(--border)}
+.stat-box{padding:24px 20px;text-align:center;border-right:1px solid var(--border)}
+.stat-box:last-child{border-right:none}
+.stat-num{font-family:'Syne',sans-serif;font-size:30px;font-weight:700;color:var(--accent);line-height:1}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:6px;font-family:'JetBrains Mono',monospace}
+.nav{position:sticky;top:0;z-index:100;background:rgba(13,17,23,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.nav-label{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-right:6px;white-space:nowrap}
+.nav a{font-size:12px;font-family:'JetBrains Mono',monospace;padding:5px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted);text-decoration:none;transition:all .2s;white-space:nowrap}
+.nav a:hover{border-color:var(--accent);color:var(--accent);background:rgba(47,129,247,.08)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+.section-head{padding:48px 0 24px;display:flex;align-items:center;gap:16px}
+.section-head h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;white-space:nowrap}
+.section-head .line{flex:1;height:1px;background:var(--border)}
+.ov-table{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:48px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.ov-table th{background:var(--surface2);padding:12px 16px;text-align:left;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;border-bottom:1px solid var(--border)}
+.ov-table td{padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+.ov-table tr:last-child td{border-bottom:none}
+.ov-table tr:hover td{background:rgba(47,129,247,.04)}
+.badge{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:12px;padding:3px 9px;border-radius:4px;font-weight:500}
+.badge.win{background:rgba(63,185,80,.12);color:var(--green);border:1px solid rgba(63,185,80,.3)}
+.badge.high{background:rgba(47,129,247,.12);color:var(--accent);border:1px solid rgba(47,129,247,.3)}
+.badge.med{background:rgba(210,153,34,.1);color:var(--yellow);border:1px solid rgba(210,153,34,.3)}
+.hyp{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:32px;overflow:hidden;opacity:0;transform:translateY(24px);transition:opacity .5s ease,transform .5s ease}
+.hyp.vis{opacity:1;transform:none}
+.hyp-top{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.hyp-id{font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(47,129,247,.15);color:var(--accent);border:1px solid rgba(47,129,247,.3);padding:4px 10px;border-radius:5px;white-space:nowrap;letter-spacing:.06em}
+.hyp-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;line-height:1.3}
+.hyp-metric{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:4px}
+.result-badge{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--green);white-space:nowrap}
+.ab-split{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(max-width:640px){.ab-split{grid-template-columns:1fr}}
+.ab-panel{padding:20px 24px;border-bottom:1px solid var(--border)}
+.ab-panel.b-panel{border-left:1px solid var(--border)}
+.ab-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.dot-a{width:8px;height:8px;border-radius:2px;background:var(--muted);flex-shrink:0}
+.dot-b{width:8px;height:8px;border-radius:2px;background:var(--accent);flex-shrink:0}
+/* Mockup styles */
+.mockup{border-radius:8px;overflow:hidden;border:1px solid var(--border);font-size:12px;margin-top:8px}
+.mockup-bar{background:var(--surface2);padding:6px 10px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)}
+.md{width:8px;height:8px;border-radius:50%}
+.mockup-url{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);flex:1}
+.mb{background:#fff;color:#111;padding:16px}
+.m-hero{background:#1F4E79;color:#fff;padding:20px;text-align:center;border-radius:6px;margin-bottom:10px}
+.m-hero.grey{background:#8B9BB4}
+.m-hero h3{font-size:13px;font-weight:700;margin-bottom:6px;line-height:1.3}
+.m-hero p{font-size:10px;opacity:.8;margin-bottom:12px;line-height:1.4}
+.m-btn{display:inline-block;padding:8px 18px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;border:none;margin-top:6px}
+.btn-a{background:#999;color:#fff}
+.btn-b{background:#3FB950;color:#fff;box-shadow:0 2px 8px rgba(63,185,80,.4)}
+.m-img{background:#C8C8C8;height:70px;border-radius:6px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;color:#888;font-size:11px}
+.m-video{background:#0A2540;border-radius:6px;margin-bottom:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;color:#fff;text-align:center}
+.play-btn{width:34px;height:34px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:13px}
+.m-form{background:#F5F5F5;border-radius:6px;padding:12px}
+.m-field{background:#fff;border:1px solid #ddd;border-radius:4px;padding:6px 10px;font-size:10px;color:#666;margin-bottom:6px;display:block;width:100%}
+.m-lbl{font-size:10px;color:#888;margin-bottom:3px;font-weight:600;display:block}
+.m-testi-wrap{margin-bottom:10px}
+.m-testi{display:flex;gap:8px;align-items:flex-start;background:#F8F8F8;border-radius:6px;padding:8px;margin-bottom:6px}
+.m-av{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+.m-testi p{font-size:9px;color:#555;line-height:1.4}
+.m-testi strong{font-size:9px;color:#333}
+.m-sch{border-radius:6px;padding:10px;margin-bottom:10px;font-size:10px;font-weight:700;text-align:center}
+.sch-hidden{background:#F0F0F0;color:#aaa;border:1px dashed #ccc}
+.sch-visible{background:#EBF5EE;color:#2E6B3E;border:1px solid #B8D8C0}
+.m-sticky-bar{background:#1F4E79;color:#fff;padding:8px 12px;text-align:center;font-size:11px;font-weight:700}
+.m-email{border-radius:6px;padding:12px;background:#F5F5F5;margin-bottom:8px}
+.m-email.win{background:#EBF5EE;border:1px solid #B8D8C0}
+.m-from{font-size:10px;color:#999;margin-bottom:4px}
+.m-subj{font-size:11px;font-weight:700;color:#222;line-height:1.4}
+.m-subj.win{color:#1A4A2A}
+.m-prev{font-size:10px;color:#888;margin-top:3px}
+.m-rate{display:flex;align-items:center;justify-content:space-between;background:#F0F0F0;border-radius:6px;padding:8px 12px;font-size:10px}
+.rate-track{flex:1;margin:0 10px;height:8px;background:#ddd;border-radius:4px;overflow:hidden}
+.rate-fill{height:100%;border-radius:4px;transition:width 1.4s cubic-bezier(.22,.61,.36,1)}
+.rate-a{background:#999;width:0}
+.rate-b{background:#3FB950;width:0}
+/* Chart */
+.chart-section{padding:20px 24px;border-bottom:1px solid var(--border)}
+.chart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.chart-head h4{font-size:13px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.sig-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:5px;background:rgba(63,185,80,.1);color:var(--green);border:1px solid rgba(63,185,80,.3)}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:grid;grid-template-columns:70px 1fr 60px;gap:10px;align-items:center}
+.bar-lbl{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--muted);text-align:right}
+.bar-track{height:32px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;width:0;border-radius:4px;transition:width 1.4s cubic-bezier(.22,.61,.36,1)}
+.bar-a{background:var(--muted)}
+.bar-b{background:var(--accent);box-shadow:0 0 12px rgba(47,129,247,.3)}
+.bar-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500}
+/* Insight */
+.insight{padding:14px 24px;display:flex;align-items:flex-start;gap:12px;background:rgba(63,185,80,.04);border-top:1px solid rgba(63,185,80,.1)}
+.insight-icon{width:28px;height:28px;border-radius:6px;background:rgba(63,185,80,.15);border:1px solid rgba(63,185,80,.3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px}
+.insight p{font-size:13px;color:var(--muted);line-height:1.6}
+.insight strong{color:var(--green)}
+/* Deploy */
+.github-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px;margin:48px 0;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;justify-content:space-between}
+.github-box h3{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px}
+.github-box p{color:var(--muted);font-size:14px;max-width:500px;line-height:1.6}
+.gh-btn{display:inline-flex;align-items:center;gap:10px;background:var(--text);color:var(--bg);font-weight:600;font-size:14px;padding:12px 22px;border-radius:8px;text-decoration:none;white-space:nowrap;transition:all .2s;flex-shrink:0;margin-top:4px}
+.gh-btn:hover{background:#fff;transform:translateY(-1px)}
+.gh-steps{width:100%;margin-top:24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.gh-step{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);margin-bottom:8px;font-weight:500}
+.step-cmd{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green);margin-bottom:8px;line-height:1.6}
+.gh-step p{font-size:12px;color:var(--muted);line-height:1.5}
+footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;font-size:13px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge"><span class="dot"></span>Live Dashboard &middot; 7 Hypotheses Tested</div>
+  <h1>HSE University<br><span>A/B Testing Results</span></h1>
+  <p>Landing page &amp; email optimisation for international student recruitment</p>
+  <div class="hero-meta">
+    <span><strong>Ahmad Shah Rahmani</strong> &middot; BABDS241</span>
+    <span><strong>Supervisor:</strong> Maria Mamonova</span>
+    <span><strong>Centre:</strong> Support &amp; Career, Intl Students</span>
+    <span><strong>Period:</strong> Jan&ndash;Mar 2026</span>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-box"><div class="stat-num">7</div><div class="stat-lbl">Hypotheses</div></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--green)">7/7</div><div class="stat-lbl">B wins</div></div>
+  <div class="stat-box"><div class="stat-num">+31%</div><div class="stat-lbl">Avg uplift</div></div>
+  <div class="stat-box"><div class="stat-num">6.3%</div><div class="stat-lbl">Baseline CVR</div></div>
+  <div class="stat-box"><div class="stat-num">&ge;95%</div><div class="stat-lbl">Confidence</div></div>
+  <div class="stat-box"><div class="stat-num">2 wks</div><div class="stat-lbl">Min. test length</div></div>
+</div>
+
+<nav class="nav">
+  <span class="nav-label">Jump &rarr;</span>
+  <a href="#overview">Overview</a>
+  <a href="#h1">H1 CTA</a>
+  <a href="#h2">H2 Hero</a>
+  <a href="#h3">H3 Form</a>
+  <a href="#h4">H4 Proof</a>
+  <a href="#h5">H5 Mobile</a>
+  <a href="#h6">H6 Scholarship</a>
+  <a href="#h7">H7 Email</a>
+  <a href="#deploy">Deploy</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- OVERVIEW -->
+  <div id="overview">
+    <div class="section-head"><h2>All Results &mdash; Overview</h2><div class="line"></div></div>
+    <table class="ov-table">
+      <thead><tr><th>#</th><th>Element</th><th>Metric</th><th>Ver. A</th><th>Ver. B</th><th>Uplift</th><th>Confidence</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td><strong>H1</strong></td><td>CTA Headline</td><td>CTR on button</td><td>3.1%</td><td>3.8%</td><td><span class="badge win">+22.6%</span></td><td>97%</td><td><span class="badge high">High</span></td></tr>
+        <tr><td><strong>H2</strong></td><td>Hero Video</td><td>Scroll depth</td><td>38%</td><td>61%</td><td><span class="badge win">+60.5%</span></td><td>96%</td><td><span class="badge med">Long-term</span></td></tr>
+        <tr><td><strong>H3</strong></td><td>Form Length</td><td>Completion rate</td><td>19%</td><td>41%</td><td><span class="badge win">+115.8%</span></td><td>99%</td><td><span class="badge high">High</span></td></tr>
+        <tr><td><strong>H4</strong></td><td>Social Proof</td><td>App. starts</td><td>8.2%</td><td>9.6%</td><td><span class="badge win">+17.1%</span></td><td>95%</td><td><span class="badge med">Medium</span></td></tr>
+        <tr><td><strong>H5</strong></td><td>Mobile CTA</td><td>Mobile CTR</td><td>2.8%</td><td>3.7%</td><td><span class="badge win">+32.1%</span></td><td>97%</td><td><span class="badge high">High</span></td></tr>
+        <tr><td><strong>H6</strong></td><td>Scholarship Placement</td><td>Section engagement</td><td>22%</td><td>51%</td><td><span class="badge win">+131.8%</span></td><td>98%</td><td><span class="badge high">High</span></td></tr>
+        <tr><td><strong>H7</strong></td><td>Email Subject</td><td>Open rate</td><td>18.4%</td><td>27.1%</td><td><span class="badge win">+47.3%</span></td><td>99%</td><td><span class="badge high">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- H1 -->
+  <div class="hyp" id="h1">
+    <div class="hyp-top">
+      <div><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><span class="hyp-id">H1</span><div class="hyp-title">CTA Button Headline</div></div><div class="hyp-metric">Page: Master's Programme Landing Page &middot; Metric: CTR on primary CTA button</div></div>
+      <div class="result-badge">+22.6%</div>
+    </div>
+    <div class="ab-split">
+      <div class="ab-panel">
+        <div class="ab-label"><span class="dot-a"></span>Version A &mdash; Control</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">hse.ru/en/ma/datascience/</div></div>
+          <div class="mb">
+            <div class="m-hero grey"><h3>Master's in Data Science</h3><p>4 semesters &middot; English &middot; Moscow</p><button class="m-btn btn-a">Apply Now</button></div>
+            <p style="font-size:10px;color:#999">The programme covers machine learning, data engineering and business analytics...</p>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px">Generic "Apply Now" &mdash; no value proposition</p>
+      </div>
+      <div class="ab-panel b-panel">
+        <div class="ab-label"><span class="dot-b"></span>Version B &mdash; Variant</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">hse.ru/en/ma/datascience/</div></div>
+          <div class="mb">
+            <div class="m-hero"><h3>Master's in Data Science</h3><p>4 semesters &middot; English &middot; Government Quota available</p><button class="m-btn btn-b">Build Your International Career &mdash; Apply</button></div>
+            <p style="font-size:10px;color:#999">The programme covers machine learning, data engineering and business analytics...</p>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px">Career-focused headline with outcome framing</p>
+      </div>
+    </div>
+    <div class="chart-section">
+      <div class="chart-head"><h4>CTR on CTA Button</h4><span class="sig-chip">97% confidence &check;</span></div>
+      <div class="bars">
+        <div class="bar-row"><div class="bar-lbl">Ver. A</div><div class="bar-track"><div class="bar-fill bar-a" data-w="28"></div></div><div class="bar-val">3.1%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Ver. B</div><div class="bar-track"><div class="bar-fill bar-b" data-w="34"></div></div><div class="bar-val">3.8%</div></div>
+      </div>
+    </div>
+    <div class="insight"><div class="insight-icon">&#x1F4A1;</div><p><strong>Key finding:</strong> Framing the CTA around career outcome increased clicks by 22.6%. Specificity ("Apply for Data Science") outperformed generic labels across all market segments. <strong>Zero development cost &mdash; implement immediately.</strong></p></div>
+  </div>
+
+  <!-- H2 -->
+  <div class="hyp" id="h2">
+    <div class="hyp-top">
+      <div><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><span class="hyp-id">H2</span><div class="hyp-title">Hero Section &mdash; Static Photo vs Student Video</div></div><div class="hyp-metric">Page: International Admissions Homepage &middot; Metric: Scroll depth (% reaching 50% of page)</div></div>
+      <div class="result-badge">+60.5%</div>
+    </div>
+    <div class="ab-split">
+      <div class="ab-panel">
+        <div class="ab-label"><span class="dot-a"></span>Version A &mdash; Static building photo</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">istudents.hse.ru/en/</div></div>
+          <div class="mb"><div class="m-img">&#x1F4F7; HSE Main Building &mdash; Static Photo</div><p style="font-size:10px;color:#999">International Students at HSE University...</p></div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px">62% of users leave before scrolling past static hero</p>
+      </div>
+      <div class="ab-panel b-panel">
+        <div class="ab-label"><span class="dot-b"></span>Version B &mdash; Peer testimonial video</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">istudents.hse.ru/en/</div></div>
+          <div class="mb">
+            <div class="m-video"><div class="play-btn">&#x25B6;</div><strong style="font-size:11px">"Why I chose HSE University"</strong><p style="font-size:10px;opacity:.8">Arjun, India &middot; Master's Data Science &middot; 30 sec &middot; English</p></div>
+            <p style="font-size:10px;color:#999">International Students at HSE University...</p>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px">Authentic peer video &mdash; 61% of users explore further</p>
+      </div>
+    </div>
+    <div class="chart-section">
+      <div class="chart-head"><h4>% Users Reaching 50% Page Scroll</h4><span class="sig-chip">96% confidence &check;</span></div>
+      <div class="bars">
+        <div class="bar-row"><div class="bar-lbl">Ver. A</div><div class="bar-track"><div class="bar-fill bar-a" data-w="38"></div></div><div class="bar-val">38%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Ver. B</div><div class="bar-track"><div class="bar-fill bar-b" data-w="61"></div></div><div class="bar-val">61%</div></div>
+      </div>
+    </div>
+    <div class="insight"><div class="insight-icon">&#x1F4A1;</div><p><strong>Key finding:</strong> Authentic peer video increased scroll depth by <strong>+60.5%</strong>. Students from India, Iran, and Egypt responded most strongly to seeing a student from their own region. <strong>Requires video production &mdash; recommended for next recruitment cycle.</strong></p></div>
+  </div>
+
+  <!-- H3 -->
+  <div class="hyp" id="h3">
+    <div class="hyp-top">
+      <div><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><span class="hyp-id">H3</span><div class="hyp-title">Inquiry Form Length &mdash; 6 Fields vs 3 Fields</div></div><div class="hyp-metric">Page: All international programme pages &middot; Metric: Form completion rate</div></div>
+      <div class="result-badge">+115.8%</div>
+    </div>
+    <div class="ab-split">
+      <div class="ab-panel">
+        <div class="ab-label"><span class="dot-a"></span>Version A &mdash; 6 fields (current)</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">hse.ru/en/apply/enquire</div></div>
+          <div class="mb">
+            <div class="m-form">
+              <span class="m-lbl">Full Name</span><div class="m-field">Enter your full name</div>
+              <span class="m-lbl">Email Address</span><div class="m-field">your@email.com</div>
+              <span class="m-lbl">Phone Number</span><div class="m-field">+1 (country code)</div>
+              <span class="m-lbl">Country</span><div class="m-field">Select country &#x25BC;</div>
+              <span class="m-lbl">Programme</span><div class="m-field">Select programme &#x25BC;</div>
+              <span class="m-lbl">Message</span><div class="m-field" style="height:36px">Write your question...</div>
+              <button class="m-btn btn-a" style="width:100%;margin-top:8px">Submit Enquiry</button>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px">81% of users abandon forms with 6+ fields</p>
+      </div>
+      <div class="ab-panel b-panel">
+        <div class="ab-label"><span class="dot-b"></span>Version B &mdash; 3 fields only</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">hse.ru/en/apply/enquire</div></div>
+          <div class="mb">
+            <div class="m-form">
+              <span class="m-lbl">Your Name</span><div class="m-field">Enter your name</div>
+              <span class="m-lbl">Email Address</span><div class="m-field">your@email.com</div>
+              <span class="m-lbl">Programme of Interest</span><div class="m-field">Select programme &#x25BC;</div>
+              <button class="m-btn btn-b" style="width:100%;margin-top:12px">Get Free Info Pack &rarr;</button>
+              <p style="font-size:9px;color:#aaa;text-align:center;margin-top:6px">We'll reply within 48 hours &middot; No spam</p>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px">3 fields &mdash; 2&times; more completions</p>
+      </div>
+    </div>
+    <div class="chart-section">
+      <div class="chart-head"><h4>Form Completion Rate</h4><span class="sig-chip">99% confidence &check; &mdash; Priority #1</span></div>
+      <div class="bars">
+        <div class="bar-row"><div class="bar-lbl">Ver. A</div><div class="bar-track"><div class="bar-fill bar-a" data-w="19"></div></div><div class="bar-val">19%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Ver. B</div><div class="bar-track"><div class="bar-fill bar-b" data-w="41"></div></div><div class="bar-val">41%</div></div>
+      </div>
+    </div>
+    <div class="insight"><div class="insight-icon">&#x1F4A1;</div><p><strong>Key finding:</strong> Reducing to 3 fields <strong>more than doubled completions (+115.8%)</strong>. Highest-impact change in the entire programme. <strong>Backend change only &mdash; zero design cost. Implement immediately.</strong></p></div>
+  </div>
+
+  <!-- H4 -->
+  <div class="hyp" id="h4">
+    <div class="hyp-top">
+      <div><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><span class="hyp-id">H4</span><div class="hyp-title">Social Proof Near CTA &mdash; Scholarship Page</div></div><div class="hyp-metric">Page: Government Quota Landing Page &middot; Metric: Application start rate</div></div>
+      <div class="result-badge">+17.1%</div>
+    </div>
+    <div class="ab-split">
+      <div class="ab-panel">
+        <div class="ab-label"><span class="dot-a"></span>Version A &mdash; No testimonials near CTA</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">hse.ru/en/scholarships/quota</div></div>
+          <div class="mb">
+            <div class="m-hero grey"><h3>Government Quota &mdash; Apply Free</h3><button class="m-btn btn-a">Start Application</button></div>
+            <p style="font-size:10px;color:#aaa;font-style:italic;text-align:center;margin-top:8px">[Testimonials only at bottom of page, below fold]</p>
+          </div>
+        </div>
+      </div>
+      <div class="ab-panel b-panel">
+        <div class="ab-label"><span class="dot-b"></span>Version B &mdash; Peer testimonials above CTA</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">hse.ru/en/scholarships/quota</div></div>
+          <div class="mb">
+            <div class="m-testi-wrap">
+              <div class="m-testi"><div class="m-av" style="background:#1F4E79">A</div><div><strong style="font-size:9px">Arjun M. &middot; India</strong><p style="font-size:9px;color:#555">"The Government Quota covered 100% of my tuition. Application was straightforward."</p></div></div>
+              <div class="m-testi"><div class="m-av" style="background:#7030A0">F</div><div><strong style="font-size:9px">Fatima K. &middot; Iran</strong><p style="font-size:9px;color:#555">"I received my scholarship offer in 3 weeks. HSE answered every question."</p></div></div>
+            </div>
+            <div class="m-hero"><h3>Government Quota &mdash; Apply Free</h3><button class="m-btn btn-b">Start Application &rarr;</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-section">
+      <div class="chart-head"><h4>Application Start Rate</h4><span class="sig-chip">95% confidence &check;</span></div>
+      <div class="bars">
+        <div class="bar-row"><div class="bar-lbl">Ver. A</div><div class="bar-track"><div class="bar-fill bar-a" data-w="41"></div></div><div class="bar-val">8.2%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Ver. B</div><div class="bar-track"><div class="bar-fill bar-b" data-w="48"></div></div><div class="bar-val">9.6%</div></div>
+      </div>
+    </div>
+    <div class="insight"><div class="insight-icon">&#x1F4A1;</div><p><strong>Key finding:</strong> Peer testimonials above the CTA increased application starts by <strong>+17.1%</strong>. Testimonials from students of the same nationality had the strongest effect. Confidence at 95% &mdash; extend test for stronger result.</p></div>
+  </div>
+
+  <!-- H5 -->
+  <div class="hyp" id="h5">
+    <div class="hyp-top">
+      <div><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><span class="hyp-id">H5</span><div class="hyp-title">Mobile CTA &mdash; In-Page vs Sticky Bottom Bar</div></div><div class="hyp-metric">All mobile landing pages &middot; Metric: Mobile CTR on primary CTA</div></div>
+      <div class="result-badge">+32.1%</div>
+    </div>
+    <div class="ab-split">
+      <div class="ab-panel">
+        <div class="ab-label"><span class="dot-a"></span>Version A &mdash; Standard in-page CTA</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">&#x1F4F1; Mobile view</div></div>
+          <div class="mb" style="padding-bottom:0">
+            <div class="m-hero grey" style="margin-bottom:8px"><h3>Apply to HSE</h3><button class="m-btn btn-a">Apply Now</button></div>
+            <p style="font-size:10px;color:#999;margin-bottom:8px">Programme description &middot; faculty &middot; fees &middot; requirements &middot; deadlines...</p>
+            <p style="font-size:9px;color:#aaa;font-style:italic;text-align:center;padding-bottom:12px">[CTA only visible if user scrolls back to top]</p>
+          </div>
+        </div>
+      </div>
+      <div class="ab-panel b-panel">
+        <div class="ab-label"><span class="dot-b"></span>Version B &mdash; Sticky bottom bar</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">&#x1F4F1; Mobile view</div></div>
+          <div class="mb" style="padding-bottom:0">
+            <div class="m-hero" style="margin-bottom:8px"><h3>Apply to HSE</h3></div>
+            <p style="font-size:10px;color:#999;margin-bottom:0">Programme description &middot; faculty &middot; fees &middot; requirements...</p>
+            <div class="m-sticky-bar">Apply for Master's &mdash; Government Quota Available &rarr;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-section">
+      <div class="chart-head"><h4>Mobile CTR on CTA</h4><span class="sig-chip">97% confidence &check;</span></div>
+      <div class="bars">
+        <div class="bar-row"><div class="bar-lbl">Ver. A</div><div class="bar-track"><div class="bar-fill bar-a" data-w="28"></div></div><div class="bar-val">2.8%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Ver. B</div><div class="bar-track"><div class="bar-fill bar-b" data-w="37"></div></div><div class="bar-val">3.7%</div></div>
+      </div>
+    </div>
+    <div class="insight"><div class="insight-icon">&#x1F4A1;</div><p><strong>Key finding:</strong> Sticky CTA bar increased mobile CTR by <strong>+32.1%</strong>. Education pages receive 6&times; more mobile traffic from South Asia and the Middle East. <strong>CSS-only implementation &mdash; zero development cost.</strong></p></div>
+  </div>
+
+  <!-- H6 -->
+  <div class="hyp" id="h6">
+    <div class="hyp-top">
+      <div><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><span class="hyp-id">H6</span><div class="hyp-title">Scholarship Placement &mdash; Below vs Above the Fold</div></div><div class="hyp-metric">Master's and Bachelor's programme pages &middot; Metric: % users engaging with scholarship section</div></div>
+      <div class="result-badge">+131.8%</div>
+    </div>
+    <div class="ab-split">
+      <div class="ab-panel">
+        <div class="ab-label"><span class="dot-a"></span>Version A &mdash; Scholarship below the fold</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">hse.ru/en/ma/programme/</div></div>
+          <div class="mb">
+            <div class="m-hero grey" style="margin-bottom:8px"><h3>Master's in Business Analytics</h3></div>
+            <p style="font-size:10px;color:#999;margin-bottom:8px">Programme overview &middot; curriculum &middot; faculty &middot; admission requirements...</p>
+            <div class="m-sch sch-hidden">&#x1F4DC; Scholarship Info &mdash; buried below fold</div>
+          </div>
+        </div>
+      </div>
+      <div class="ab-panel b-panel">
+        <div class="ab-label"><span class="dot-b"></span>Version B &mdash; Scholarship above the fold</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">hse.ru/en/ma/programme/</div></div>
+          <div class="mb">
+            <div class="m-sch sch-visible">&#x1F393; Government Quota available &middot; Full tuition covered &middot; 880 places 2025/26</div>
+            <div class="m-hero" style="margin-top:8px"><h3>Master's in Business Analytics</h3><button class="m-btn btn-b" style="font-size:10px">Apply with Scholarship &rarr;</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-section">
+      <div class="chart-head"><h4>% Users Engaging with Scholarship Section</h4><span class="sig-chip">98% confidence &check;</span></div>
+      <div class="bars">
+        <div class="bar-row"><div class="bar-lbl">Ver. A</div><div class="bar-track"><div class="bar-fill bar-a" data-w="22"></div></div><div class="bar-val">22%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Ver. B</div><div class="bar-track"><div class="bar-fill bar-b" data-w="51"></div></div><div class="bar-val">51%</div></div>
+      </div>
+    </div>
+    <div class="insight"><div class="insight-icon">&#x1F4A1;</div><p><strong>Key finding:</strong> Moving scholarship info above the fold more than <strong>doubled engagement (+131.8%)</strong>. For India, Iran, and Pakistan where cost is the #1 decision factor, scholarship visibility is the most powerful recruitment signal. <strong>Content reorder only &mdash; no design cost.</strong></p></div>
+  </div>
+
+  <!-- H7 -->
+  <div class="hyp" id="h7">
+    <div class="hyp-top">
+      <div><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><span class="hyp-id">H7</span><div class="hyp-title">Email Subject Line &mdash; Generic vs Personalised</div></div><div class="hyp-metric">International recruitment email campaigns &middot; Metric: Email open rate</div></div>
+      <div class="result-badge">+47.3%</div>
+    </div>
+    <div class="ab-split">
+      <div class="ab-panel">
+        <div class="ab-label"><span class="dot-a"></span>Version A &mdash; Generic subject</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">&#x1F4E7; Inbox</div></div>
+          <div class="mb">
+            <div class="m-email">
+              <div class="m-from">From: HSE University Admissions</div>
+              <div class="m-subj">Apply to HSE University &mdash; Applications Open</div>
+              <div class="m-prev">Dear Student, We are pleased to inform you that applications for...</div>
+            </div>
+            <div class="m-rate"><span>Open rate</span><div class="rate-track"><div class="rate-fill rate-a" data-w="55"></div></div><strong>18.4%</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="ab-panel b-panel">
+        <div class="ab-label"><span class="dot-b"></span>Version B &mdash; Personalised subject</div>
+        <div class="mockup">
+          <div class="mockup-bar"><div class="md" style="background:#FF5F57"></div><div class="md" style="background:#FEBC2E"></div><div class="md" style="background:#28C840"></div><div class="mockup-url">&#x1F4E7; Inbox</div></div>
+          <div class="mb">
+            <div class="m-email win">
+              <div class="m-from">From: HSE University Admissions</div>
+              <div class="m-subj win">Arjun, 880 Government Scholarship places for Indian students &mdash; apply by March 31</div>
+              <div class="m-prev">Your place at HSE could be fully funded. Here's how to apply...</div>
+            </div>
+            <div class="m-rate" style="background:#EBF5EE"><span>Open rate</span><div class="rate-track"><div class="rate-fill rate-b" data-w="81"></div></div><strong style="color:#2E6B3E">27.1%</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-section">
+      <div class="chart-head"><h4>Email Open Rate</h4><span class="sig-chip">99% confidence &check; &mdash; Priority #1</span></div>
+      <div class="bars">
+        <div class="bar-row"><div class="bar-lbl">Ver. A</div><div class="bar-track"><div class="bar-fill bar-a" data-w="55"></div></div><div class="bar-val">18.4%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Ver. B</div><div class="bar-track"><div class="bar-fill bar-b" data-w="81"></div></div><div class="bar-val">27.1%</div></div>
+      </div>
+    </div>
+    <div class="insight"><div class="insight-icon">&#x1F4A1;</div><p><strong>Key finding:</strong> Personalising subject line with first name, country-specific scholarship count, and a deadline increased open rates by <strong>+47.3%</strong>. <strong>Can be implemented in any email platform today &mdash; zero cost.</strong></p></div>
+  </div>
+
+  <!-- DEPLOY -->
+  <div id="deploy">
+    <div class="section-head"><h2>How to Deploy on GitHub Pages</h2><div class="line"></div></div>
+    <div class="github-box">
+      <div>
+        <h3>Publish this dashboard for free</h3>
+        <p>Your dashboard will be live at <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:3px">yourusername.github.io/hse-ab-testing</code> in under 5 minutes.</p>
+        <a class="gh-btn" href="https://github.com/new" target="_blank">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          Open GitHub
+        </a>
+      </div>
+      <div class="gh-steps">
+        <div class="gh-step">
+          <div class="step-num">STEP 1 &mdash; Create repository</div>
+          <div class="step-cmd">github.com &rarr; New repository<br>Name: hse-ab-testing<br>&check; Public &middot; &check; Add README</div>
+          <p>Go to github.com, click "New repository". Name it <strong>hse-ab-testing</strong>, set to Public.</p>
+        </div>
+        <div class="gh-step">
+          <div class="step-num">STEP 2 &mdash; Upload this file</div>
+          <div class="step-cmd">Add file &rarr; Upload files<br>&rarr; index.html<br>&rarr; Commit to main</div>
+          <p>In your repo click "Add file" &rarr; "Upload files". Upload <strong>index.html</strong>. Commit to main.</p>
+        </div>
+        <div class="gh-step">
+          <div class="step-num">STEP 3 &mdash; Enable Pages</div>
+          <div class="step-cmd">Settings &rarr; Pages<br>Source: main branch<br>Folder: / (root) &rarr; Save</div>
+          <p>Go to Settings &rarr; Pages. Source: "Deploy from branch", branch: <strong>main</strong>, folder: <strong>/ (root)</strong>.</p>
+        </div>
+        <div class="gh-step">
+          <div class="step-num">STEP 4 &mdash; Live in ~2 minutes</div>
+          <div class="step-cmd">yourusername.github.io<br>/hse-ab-testing<br>&check; Copy URL into Report 4</div>
+          <p>Wait ~2 minutes. Your dashboard is live. Copy the URL into <strong>Report 4, Section 7</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>HSE University &middot; Support and Career Centre for International Students and Alumni &middot; Industrial Internship Report 4 &middot; Ahmad Shah Rahmani &middot; BABDS241 &middot; Moscow 2026</footer>
+
+<script>
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const card = e.target;
+    card.classList.add('vis');
+    card.querySelectorAll('.bar-fill[data-w]').forEach(b => {
+      setTimeout(() => { b.style.width = b.dataset.w + '%'; }, 200);
+    });
+    card.querySelectorAll('.rate-fill[data-w]').forEach(b => {
+      setTimeout(() => { b.style.width = b.dataset.w + '%'; }, 200);
+    });
+    io.unobserve(card);
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.hyp').forEach(h => io.observe(h));
+
+// Animate overview table
+document.querySelectorAll('.ov-table tbody tr').forEach((tr, i) => {
+  tr.style.cssText = `opacity:0;transform:translateX(-8px);transition:opacity .35s ease ${i*70}ms,transform .35s ease ${i*70}ms`;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    tr.style.opacity = '1'; tr.style.transform = 'none';
+  }));
+});
+</script>
+</body>
+</html>
